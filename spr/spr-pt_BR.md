@@ -43,7 +43,10 @@ Apenas os píxeis coloridos são armazenados do arquivo. A cor magenta (#FF00FF)
 
 ### Leitura do arquivo
 
-- Head
+- Header
+    - Ler a assinatura do arquivo.
+    - Ler a quantidade de sprites.
+    - Armazenar a posição do cursor no stream.
 
 ```JavaScript
 
@@ -54,70 +57,51 @@ var headSize =  // -----< obter a posição atual do stream >-----
 ```
 
 - Address
-  - O endereço de um sprite pode ser lido nos limites entre 0 e a quantidade de sprites, no entanto, o endereço 0 representa um sprite vazio, sem nenhum pixel colorido e não precisa ser lido do arquivo.
+    - Checar se o id fornecido é válido. 
+    - Definir a posição do cursor no stream de acordo com o id fornecido. O endereço de um sprite pode ser lido nos limites entre 0 e a quantidade de sprites, no entanto, o endereço 0 representa um sprite vazio, sem nenhum pixel colorido e não precisa ser lido do arquivo.
+    - Ler o endereço do sprite.
+    - Definir a posição do cursor no stream de acordo com o endereço lido.
 
 ```JavaScript
 
 function readSprite(id)
 {
+    // Checa se o id é válido
     if (id > spriteCount)
     {
         // -----< Deve lançar um erro ou retornar um sprite vazio >-----
     }
     
+    // O id 0 representa um sprite vazio
     if (id == 0)
     {
         // -----< Retornar um sprite vazio >-----
     }
     
-    // O endereço do sprite 1 é 0, então subtraimos o id.
+    // O endereço do sprite 1 é 0, então subtraimos 1 do id fornecido.
     // Cada endereço tem 4 bytes de comprimento, então multiplicamos por 4.
     // O primeiro endereço é lido logo após a leitura do 'head'.
     var position = ((id - 1) * 4) + headSize;
     
-    // -----< Definir a posição do stream de pela variável position >-----
+    // -----< Definir a posição do stream pela variável position >-----
     
     var address = // -----< ler 4 bytes do stream >-----
     
     if (address == 0)
     {
-        // -----< Retornar um sprite vazio >-----
+        // -----< Retornar um sprite vazio ??? >-----
     }
-}
+    
+    // -----< Definir a posição do stream de pela variável address >-----
 
 ```
 
 - Data
+    - Leitura da colorkey.
+    - Leitura do tamanho dos dados.
+    - Leitura dos dados.
 
 ```JavaScript
-
-function readSprite(id)
-{
-    if (id > spriteCount)
-    {
-        // -----< Deve lançar um erro ou retornar um sprite vazio >-----
-    }
-    
-    if (id == 0)
-    {
-        // -----< Retornar um sprite vazio >-----
-    }
-    
-    // O endereço do sprite 1 é 0, então subtraimos o id.
-    // Cada endereço tem 4 bytes de comprimento, então multiplicamos por 4.
-    // O primeiro endereço é lido logo após a leitura do 'head'.
-    var position = ((id - 1) * 4) + headSize;
-    
-    // -----< Definir a posição do stream de pela variável position >-----
-    
-    var address = // -----< ler 4 bytes do stream >-----
-    
-    if (address == 0)
-    {
-        // -----< Retornar um sprite vazio >-----
-    }
-    
-    // -----< Definir a posição do stream de pela variável address >-----
     
     // Colorkey
     var red = // -----< ler 1 byte do stream >-----
@@ -128,7 +112,7 @@ function readSprite(id)
     
     if (pixelDataSize == 0)
     {
-        // -----< Um sprite sem píxeis coloridos? Retornar um sprite vazio >-----
+        // -----< Um sprite sem píxeis coloridos, retornar um sprite vazio >-----
     }
     
     // TODO descrição da leitura dos pixels
