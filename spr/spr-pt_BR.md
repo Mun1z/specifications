@@ -6,40 +6,40 @@ Apenas os píxeis coloridos são armazenados do arquivo. A cor magenta (#FF00FF)
 
 #### Estrutura do arquivo
 
-| Bytes   | Comentário                                                                  |
-|---------|:----------------------------------------------------------------------------|
-| 4       | Assinatura do arquivo                                                       |
-| 2 ou 4  | A quantidade de sprites no arquivo. 2 bytes para versões abaixo de 960      |
-| 4       | Endereço do sprite 1                                                        |
-| 4       | Endereço do sprite 2                                                        |
-| 4       | Endereço do sprite 3                                                        |
-| <b>.</b>| <b>.</b>                                                                    |
-| <b>.</b>| <b>.</b>                                                                    |
-| <b>.</b>| <b>.</b>                                                                    |
-| 4       | Endereço do sprite N                                                        |
-| 1       | Sprite 1 - colorkey canal red                                               |
-| 1       | Sprite 1 - colorkey canal green                                             |
-| 1       | Sprite 1 - colorkey canal blue                                              |
-| 2       | Sprite 1 - tamanho dos dados                                                |
-| N       | Sprite 1 - dados do sprite                                                  |
-| 1       | Sprite 2 - colorkey canal red                                               |
-| 1       | Sprite 2 - colorkey canal green                                             |
-| 1       | Sprite 2 - colorkey canal blue                                              |
-| 2       | Sprite 2 - tamanho dos dados                                                |
-| N       | Sprite 3 - dados do sprite                                                  |
-| 1       | Sprite 3 - colorkey canal red                                               |
-| 1       | Sprite 3 - colorkey canal green                                             |
-| 1       | Sprite 3 - colorkey canal blue                                              |
-| 2       | Sprite 3 - tamanho dos dados                                                |
-| N       | Sprite 3 - dados do sprite                                                  |
-| <b>.</b>| <b>.</b>                                                                    |
-| <b>.</b>| <b>.</b>                                                                    |
-| <b>.</b>| <b>.</b>                                                                    |
-| 1       | Sprite N - colorkey canal red                                               |
-| 1       | Sprite N - colorkey canal green                                             |
-| 1       | Sprite N - colorkey canal blue                                              |
-| 2       | Sprite N - tamanho dos dados                                                |
-| N       | Sprite N - dados do sprite                                                  |
+| Bytes        | Comentário                                                                  |
+|--------------|:----------------------------------------------------------------------------|
+| 4 (u32)      | Assinatura do arquivo                                                       |
+| 2/4 (u16/u32)| A quantidade de sprites no arquivo. 2 bytes para versões abaixo de 960      |
+| 4 (u32)      | Endereço do sprite 1                                                        |
+| 4 (u32)      | Endereço do sprite 2                                                        |
+| 4 (u32)      | Endereço do sprite 3                                                        |
+| <b>.</b>     | <b>.</b>                                                                    |
+| <b>.</b>     | <b>.</b>                                                                    |
+| <b>.</b>     | <b>.</b>                                                                    |
+| 4 (u32)      | Endereço do sprite N                                                        |
+| 1 (u8)       | Sprite 1 - colorkey canal red                                               |
+| 1 (u8)       | Sprite 1 - colorkey canal green                                             |
+| 1 (u8)       | Sprite 1 - colorkey canal blue                                              |
+| 2 (u16)      | Sprite 1 - tamanho dos dados                                                |
+| N            | Sprite 1 - dados do sprite                                                  |
+| 1 (u8)       | Sprite 2 - colorkey canal red                                               |
+| 1 (u8)       | Sprite 2 - colorkey canal green                                             |
+| 1 (u8)       | Sprite 2 - colorkey canal blue                                              |
+| 2 (u16)      | Sprite 2 - tamanho dos dados                                                |
+| N            | Sprite 3 - dados do sprite                                                  |
+| 1 (u8)       | Sprite 3 - colorkey canal red                                               |
+| 1 (u8)       | Sprite 3 - colorkey canal green                                             |
+| 1 (u8)       | Sprite 3 - colorkey canal blue                                              |
+| 2 (u16)      | Sprite 3 - tamanho dos dados                                                |
+| N            | Sprite 3 - dados do sprite                                                  |
+| <b>.</b>     | <b>.</b>                                                                    |
+| <b>.</b>     | <b>.</b>                                                                    |
+| <b>.</b>     | <b>.</b>                                                                    |
+| 1 (u8)       | Sprite N - colorkey canal red                                               |
+| 1 (u8)       | Sprite N - colorkey canal green                                             |
+| 1 (u8)       | Sprite N - colorkey canal blue                                              |
+| 2 (u16)      | Sprite N - tamanho dos dados                                                |
+| N            | Sprite N - dados do sprite                                                  |
 
 ### Leitura do arquivo
 
@@ -50,8 +50,8 @@ Apenas os píxeis coloridos são armazenados do arquivo. A cor magenta (#FF00FF)
 
 ```JavaScript
 
-var signature =  // -----< ler 4 bytes do stream >-----
-var spriteCount = // -----< ler 2 bytes para versões anteriores à 960 ou 4 bytes para 960 ou maior >-----
+var signature =  // -----< ler 4 bytes não assinados do stream >-----
+var spriteCount = // -----< ler 2/4 bytes não assinados do stream. 2 para versões anteriores à 960 ou 4 bytes para 960 ou maior >-----
 var headSize =  // -----< obter a posição atual do stream >-----
 
 ```
@@ -97,9 +97,11 @@ function readSprite(id)
 ```
 
 - Data
-    - Leitura da colorkey.
-    - Leitura do tamanho dos dados.
-    - Leitura dos dados.
+    - Ler a colorkey.
+    - Ler o tamanho dos dados.
+    - Ler os dados. Apenas píxeis coloridos são lidos. Os primeiros 2 bytes representam a quantidade de
+      píxeis transparentes até o próximo pixel colorido. Os 2 bytes seguintes reprentam a quantidade de
+      píxeis colororidos até o próximo pixel transparente. Em seguida, são lidos os 3 bytes da cor do pixel.
 
 ```JavaScript
     
@@ -112,10 +114,32 @@ function readSprite(id)
     
     if (pixelDataSize == 0)
     {
-        // -----< Um sprite sem píxeis coloridos, retornar um sprite vazio >-----
+        // -----< Um sprite sem dados ??? Retornar um sprite vazio >-----
     }
     
-    // TODO descrição da leitura dos pixels
+    var read = 0;
+    var currentPixel = 0;
+    
+    while (read < pixelDataSize)
+    {
+        var transparentPixels = // -----< ler 2 bytes não assinados do stream >-----
+        var coloredPixels = // -----< ler 2 bytes não assinados do stream >-----
+         
+        currentPixel += transparentPixels;
+        
+        // lê os píxeis coloridos
+        for (var i = 0; i < coloredPixels; i++)
+        {
+            var red = // -----< ler 1 do stream >-----
+            var green = // -----< ler 1 do stream >-----
+            var blue = // -----< ler 1 do stream >-----
+            
+            currentPixel++;
+        }
+        
+        // read += ( transparentPixels(u16) + coloredPixels(u16) ) + ( coloredPixels * ( red(u8) + green(u8) + blue(u8) ) )
+        read += 4 + (coloredPixels * 3);
+    }
 }
 
 ```
