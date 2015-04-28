@@ -2,14 +2,14 @@ Especificação do arquivo SPR
 ---
 
 O Arquivo SPR contém os dados dos sprites. Um sprite representa uma imagem não transparente de 32x32 píxeis.
-Apenas os píxeis coloridos são armazenados do arquivo. A cor magenta (#FF00FF) é usada para indicar os píxeis transparentes.
+Apenas os píxeis coloridos são armazenados no arquivo. A cor magenta (#FF00FF) é usada para indicar os píxeis transparentes.
 
 #### Estrutura do arquivo
 
 | Bytes        | Comentário                                                                  |
 |--------------|:----------------------------------------------------------------------------|
 | 4 (u32)      | Assinatura do arquivo                                                       |
-| 2/4 (u16/u32)| A quantidade de sprites no arquivo. 2 bytes para versões abaixo de 960      |
+| 2/4 (u16/u32)| Quantidade de sprites no arquivo. 2 bytes para versões abaixo de 960        |
 | 4 (u32)      | Endereço do sprite 1                                                        |
 | 4 (u32)      | Endereço do sprite 2                                                        |
 | 4 (u32)      | Endereço do sprite 3                                                        |
