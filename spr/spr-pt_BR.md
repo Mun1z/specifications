@@ -1,120 +1,120 @@
-Especificação do arquivo SPR
+File Specification SPR
 ---
 
-O Arquivo SPR contém os dados dos sprites. Um sprite representa uma imagem não transparente de 32x32 píxeis.
-Apenas os píxeis coloridos são armazenados no arquivo. A cor magenta (#FF00FF) é usada para indicar os píxeis transparentes.
+The SPR file contains data of sprites. A sprite is a non-transparent image of 32x32 pixels.
+Only the colored pixels are stored in the file. The magenta color (#FF00FF) is used to indicate the transparent pixels.
 
-#### Estrutura do arquivo
+#### File Structure
 
-| Bytes        | Comentário                                                                  |
+| Bytes        | Comment                                                                     |
 |--------------|:----------------------------------------------------------------------------|
-| 4 (u32)      | Assinatura do arquivo                                                       |
-| 2/4 (u16/u32)| Quantidade de sprites no arquivo. 2 bytes para versões abaixo de 960        |
-| 4 (u32)      | Endereço do sprite 1                                                        |
-| 4 (u32)      | Endereço do sprite 2                                                        |
-| 4 (u32)      | Endereço do sprite 3                                                        |
+| 4 (u32)      | File Signature                                                              |
+| 2/4 (u16/u32)| sprite number in the file. 2 bytes for versions below 960                   |
+| 4 (u32)      | Sprite Address 1                                                            |
+| 4 (u32)      | Sprite Address 2                                                            |
+| 4 (u32)      | Sprite Address 3                                                            |
 | <b>.</b>     | <b>.</b>                                                                    |
 | <b>.</b>     | <b>.</b>                                                                    |
 | <b>.</b>     | <b>.</b>                                                                    |
-| 4 (u32)      | Endereço do sprite N                                                        |
-| 1 (u8)       | Sprite 1 - colorkey canal red                                               |
-| 1 (u8)       | Sprite 1 - colorkey canal green                                             |
-| 1 (u8)       | Sprite 1 - colorkey canal blue                                              |
-| 2 (u16)      | Sprite 1 - tamanho dos dados                                                |
-| N            | Sprite 1 - dados do sprite                                                  |
-| 1 (u8)       | Sprite 2 - colorkey canal red                                               |
-| 1 (u8)       | Sprite 2 - colorkey canal green                                             |
-| 1 (u8)       | Sprite 2 - colorkey canal blue                                              |
-| 2 (u16)      | Sprite 2 - tamanho dos dados                                                |
-| N            | Sprite 3 - dados do sprite                                                  |
-| 1 (u8)       | Sprite 3 - colorkey canal red                                               |
-| 1 (u8)       | Sprite 3 - colorkey canal green                                             |
-| 1 (u8)       | Sprite 3 - colorkey canal blue                                              |
-| 2 (u16)      | Sprite 3 - tamanho dos dados                                                |
-| N            | Sprite 3 - dados do sprite                                                  |
+| 4 (u32)      | sprite address N                                                            |
+| 1 (u8)       | Sprite 1 - colorkey channel red                                             |
+| 1 (u8)       | Sprite 1 - colorkey channel green                                           |
+| 1 (u8)       | Sprite 1 - colorkey channel blue                                            |
+| 2 (u16)      | Sprite 1 - data size                                                        |
+| N            | Sprite 1 - sprite data                                                      |
+| 1 (u8)       | Sprite 2 - colorkey channel red                                             |
+| 1 (u8)       | Sprite 2 - colorkey channel green                                           |
+| 1 (u8)       | Sprite 2 - colorkey channel blue                                            |
+| 2 (u16)      | Sprite 2 - data size                                                        |
+| N            | Sprite 3 - sprite data                                                      |
+| 1 (u8)       | Sprite 3 - colorkey channel red                                             |
+| 1 (u8)       | Sprite 3 - colorkey channel green                                           |
+| 1 (u8)       | Sprite 3 - colorkey channel blue                                            |
+| 2 (u16)      | Sprite 3 - data size                                                        |
+| N            | Sprite 3 - sprite data                                                      |
 | <b>.</b>     | <b>.</b>                                                                    |
 | <b>.</b>     | <b>.</b>                                                                    |
 | <b>.</b>     | <b>.</b>                                                                    |
-| 1 (u8)       | Sprite N - colorkey canal red                                               |
-| 1 (u8)       | Sprite N - colorkey canal green                                             |
-| 1 (u8)       | Sprite N - colorkey canal blue                                              |
-| 2 (u16)      | Sprite N - tamanho dos dados                                                |
-| N            | Sprite N - dados do sprite                                                  |
+| 1 (u8)       | Sprite N - colorkey channel red                                             |
+| 1 (u8)       | Sprite N - colorkey channel green                                           |
+| 1 (u8)       | Sprite N - colorkey channel blue                                            |
+| 2 (u16)      | Sprite N - data size                                                        |
+| N            | Sprite N - sprite data                                                      |
 
-### Leitura do arquivo
+### File reading
 
 - Header
-    - Ler a assinatura do arquivo.
-    - Ler a quantidade de sprites.
-    - Armazenar a posição do cursor no stream.
+    - Read the signature file.
+    - Read the number of sprites.
+    - Storing the cursor position on stream.
 
 ```JavaScript
 
-var signature =  // -----< ler 4 bytes não assinados do stream >-----
-var spriteCount = // -----< ler 2/4 bytes não assinados do stream. 2 para versões anteriores à 960 ou 4 bytes para 960 ou maior >-----
-var headSize =  // -----< obter a posição atual do stream >-----
+var signature =  // -----< read 4 bytes unsigned stream >-----
+var spriteCount = // -----< read 2/4 bytes unsigned stream. 2 for versions < 960 , or 4 bytes to 960 or higher >-----
+var headSize =  // -----< get the current position of the stream >-----
 
 ```
 
 - Address
-    - Checar se o id fornecido é válido. 
-    - Definir a posição do cursor no stream de acordo com o id fornecido. O endereço de um sprite pode ser lido nos limites entre 0 e a quantidade de sprites, no entanto, o endereço 0 representa um sprite vazio, sem nenhum pixel colorido e não precisa ser lido do arquivo.
-    - Ler o endereço do sprite.
-    - Definir a posição do cursor no stream de acordo com o endereço lido.
+    - Check if the id provided is valid.
+    - Set the cursor position in the stream according to the id provided. The address of a sprite can be read within the limits from 0 to the number of sprites, however, address 0 represents a sprite emptiness, no color pixel and need not be read from the file .
+    - Read the sprite address
+    - Set the cursor position in the stream according to the read address.
 
 ```JavaScript
 
 function readSprite(id)
 {
-    // Checa se o id é válido
+    // Check if the id is valid
     if (id > spriteCount)
     {
-        // -----< Deve lançar um erro ou retornar um sprite vazio >-----
+        // -----< Should send a message error or returns in a empty sprite >-----
     }
     
-    // O id 0 representa um sprite vazio
+    // The id 0 represent a empty sprite
     if (id == 0)
     {
-        // -----< Retornar um sprite vazio >-----
+        // -----< return a empty sprite >-----
     }
     
-    // O endereço do sprite 1 é 0, então subtraimos 1 do id fornecido.
-    // Cada endereço tem 4 bytes de comprimento, então multiplicamos por 4.
-    // O primeiro endereço é lido logo após a leitura do 'head'.
+    // The sprite address 1 is 0, then subtract 1 from the supplied id.
+    // Each address has 4 bytes in length, then we multiply by 4.
+    // The first address is read immediately after reading the 'head'.
     var position = ((id - 1) * 4) + headSize;
     
-    // -----< Definir a posição do stream pela variável position >-----
+    // -----< Set the position of the stream by the variable position >-----
     
-    var address = // -----< ler 4 bytes do stream >-----
+    var address = // -----< read 4 bytes from the stream >-----
     
     if (address == 0)
     {
-        // -----< Retornar um sprite vazio ??? >-----
+        // -----< return a empty sprite ??? >-----
     }
     
-    // -----< Definir a posição do stream de pela variável address >-----
+    // -----< Set the stream position in variable address >-----
 
 ```
 
 - Data
-    - Ler a colorkey.
-    - Ler o tamanho dos dados.
-    - Ler os dados. Apenas píxeis coloridos são lidos. Os primeiros 2 bytes representam a quantidade de
-      píxeis transparentes até o próximo pixel colorido. Os 2 bytes seguintes reprentam a quantidade de
-      píxeis colororidos até o próximo pixel transparente. Em seguida, são lidos os 3 bytes da cor do pixel.
+    - Read the colorkey.
+    - Read the data size
+    - Read the data. Only colored pixels we can read. The first 2 bytes represent the amount of
+      transparent pixels to the next color pixel. The next 2 bytes the amount of
+      colored pixel to the next pixel transparent. Then, the 3 bytes of pixel color is read.
 
 ```JavaScript
     
     // Colorkey
-    var red = // -----< ler 1 byte do stream >-----
-    var green = // -----< ler 1 byte do stream >-----
-    var blue = // -----< ler 1 byte do stream >-----
+    var red = // -----< read 1 byte stream >-----
+    var green = // -----< read 1 byte stream >-----
+    var blue = // -----< read 1 byte stream >-----
     
-    var pixelDataSize = // -----< ler 2 bytes do stream >-----
+    var pixelDataSize = // -----< read 2 bytes from the stream >-----
     
     if (pixelDataSize == 0)
     {
-        // -----< Um sprite sem dados ??? Retornar um sprite vazio >-----
+        // -----< A sprite without data ??? Return an empty sprite >-----
     }
     
     var read = 0;
@@ -122,17 +122,17 @@ function readSprite(id)
     
     while (read < pixelDataSize)
     {
-        var transparentPixels = // -----< ler 2 bytes não assinados do stream >-----
-        var coloredPixels = // -----< ler 2 bytes não assinados do stream >-----
+        var transparentPixels = // -----< read 2 bytes unsigned stream >-----
+        var coloredPixels = // -----< read 2 bytes unsigned stream >-----
          
         currentPixel += transparentPixels;
         
-        // lê os píxeis coloridos
+        // reads the colored pixels
         for (var i = 0; i < coloredPixels; i++)
         {
-            var red = // -----< ler 1 do stream >-----
-            var green = // -----< ler 1 do stream >-----
-            var blue = // -----< ler 1 do stream >-----
+            var red = // -----< read 1 of the stream >-----
+            var green = // -----< read 1 of the stream >-----
+            var blue = // -----< read 1 of the stream >-----
             
             currentPixel++;
         }
